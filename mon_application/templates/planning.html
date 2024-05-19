@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Planning des Soutenances</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Planning des Soutenances</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Heure de Début</th>
+                <th>Heure de Fin</th>
+                <th>Salle</th>
+                <th>Enseignants</th>
+                <th>Peine</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for jour in planning %}
+                {% for creneau in jour.creneaux %}
+                <tr>
+                    <td>{{ jour.date }}</td>
+                    <td>{{ creneau.heure_debut }}</td>
+                    <td>{{ creneau.heure_fin }}</td>
+                    <td>{{ creneau.salle }}</td>
+                    <td>{{ creneau.enseignants }}</td>
+                    <td>{{ creneau.peine }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
