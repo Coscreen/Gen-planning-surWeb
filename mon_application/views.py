@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta, time
 import random
 from django.shortcuts import render
-from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ def get_data():
     ]
 
     enseignants = [
-        {"email": f"enseignant{i + 1}@example.com", "occupations": [], "indispos": []} for i in range(8)
+        {"email": f"enseignant{i + 1}@example.com", "occupations": [], "indispos": []} for i in range(15)
     ]
 
     return salles, parametres, occupations_salles, enseignants
@@ -84,10 +83,18 @@ def is_salle_disponible(date, heureD, heureF, occupations_salles, num_bloc, num_
 def is_enseignant_disponible(email, jour, heureD, heureF, enseignants):
     for enseignant in enseignants:
         if enseignant["email"] == email:
-            for indispo in enseignant["indispos"]:
-                if (jour == indispo[0] and not (heureF <= indispo[1] or heureD >= indispo[2])):
+            for occupation in enseignant["occupations"]:
+                if not (heureF <= occupation["heure_debut"] or heureD >= occupation["heure_fin"]):
                     return False
     return True
+
+def assign_occupations(jury, current_date, creneau):
+    for enseignant in jury:
+        enseignant["occupations"].append({
+            "date": current_date,
+            "heure_debut": creneau["heureD"],
+            "heure_fin": creneau["heureF"]
+        })
 
 def generate_planning(salles, parametres, occupations_salles, enseignants):
     logger.debug("Data retrieved from get_data: salles=%s, parametres=%s, occupations_salles=%s, enseignants=%s", salles, parametres, occupations_salles, enseignants)
@@ -118,6 +125,7 @@ def generate_planning(salles, parametres, occupations_salles, enseignants):
                 
                 jury = random.sample(enseignants, 5)
                 if all(is_enseignant_disponible(enseignant["email"], jour_semaine, creneau["heureD"], creneau["heureF"], enseignants) for enseignant in jury):
+                    assign_occupations(jury, current_date, creneau)
                     peine = 0
                     if jour_semaine == "Sunday":
                         peine += 1
