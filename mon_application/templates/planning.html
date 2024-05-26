@@ -19,17 +19,11 @@
         td {
             height: 50px;
             vertical-align: top;
-        }
+        }      
     </style>
 </head>
 <body>
     <h1>Planning des Soutenances</h1>
-    <h2>Debug Info</h2>
-    <pre>
-        Planning: {{ planning }}
-        Planning Hours: {{ planning_hours }}
-        Days: {{ days }}
-    </pre>
     {% load custom_filters %}
     <table>
         <thead>
@@ -50,13 +44,17 @@
                             {% if day_planning %}
                                 {% with hour_planning=day_planning|get_item:heure %}
                                     {% if hour_planning %}
-                                        {% for soutenance in hour_planning %}
-                                            <p>Salle: {{ soutenance.salle }}</p>
-                                            <p>Leader de groupe: {{ soutenance.leader_groupe }}</p>
-                                            <p>Jury: {{ soutenance.enseignants|join:", " }}</p>
-                                        {% endfor %}
+                                        {% if hour_planning|length > 0 %}
+                                            {% for soutenance in hour_planning %}
+                                                <p>Salle: {{ soutenance.salle }}</p>
+                                                <p>Leader de groupe: {{ soutenance.leader_groupe }}</p>
+                                                <p>Jury: {{ soutenance.enseignants|join:", " }}</p>
+                                            {% endfor %}
+                                        {% else %}
+                                            <p>Pas de soutenance</p>
+                                        {% endif %}
                                     {% else %}
-                                        <p>Pas de soutenance</p>
+                                        <p>Pas de planning pour cette heure</p>
                                     {% endif %}
                                 {% endwith %}
                             {% else %}
